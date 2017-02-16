@@ -1,5 +1,6 @@
 ﻿package  {
 	
+	/* All Imports */
 	import flash.display.MovieClip;
 	import flash.events.KeyboardEvent;
 	import flash.ui.Keyboard;
@@ -22,19 +23,22 @@
 	
 	public class MainSum extends MovieClip {
 		
+		
 		var enemyMelee:EnemyMelee = new EnemyMelee();
 		var enemyRange:EnemyRange = new EnemyRange();
-		
-		var blockAStates:Array = new Array(); 
-		
 		var enemyMeleeProperties:Array = new Array();
 		var enemyRangeProperties:Array = new Array();
 		
+		
+		var blockAStates:Array = new Array(); 
+
 		var menu:TitleScreen = new TitleScreen();
 		var playMenu:PlayScreen = new PlayScreen();
 		var helpMenu:HelpScreen = new HelpScreen();
+		
 		var mega:Mega = new Mega();
-
+		
+		var timeInLevel = 0;
 		
 		var level:LevelOne = new LevelOne();
 		var scene:GameScene = new GameScene();
@@ -66,6 +70,8 @@
 		var megaDeath:Sound = new MegaDeath();
 		var enemyShoot:Sound = new EnemyShoot();
 		var megaSlide:Sound = new MegaSlide();
+		
+		var enemyMaxHealth = 0;
 		
 		var xGon:Sound = new XGon();
 		var baby:Sound = new Baby();
@@ -111,12 +117,10 @@
 		var enemyAmountShot = 0;
 		
 		var slideCount = 0;
-
-
-		
 		
 		public function MainSum() {
-
+			
+			/* Block A States */
 			blockAStates[0] = ["Still", "Normal", 0, 1, 1]; 
 			blockAStates[1] = ["Still", "Normal", 0, 1, 1]; 
 			blockAStates[2] = ["Still", "Normal", 0, 1, 1]; 
@@ -131,13 +135,11 @@
 			addChild(menu);
 			
 			menu.gameButton.addEventListener(MouseEvent.CLICK, menuChoice);
-			menu.settingsButton.addEventListener(MouseEvent.CLICK, menuChoice);
 			menu.helpButton.addEventListener(MouseEvent.CLICK, menuChoice);
-			menu.creditsButton.addEventListener(MouseEvent.CLICK, menuChoice);
 			
 		}
 		
-		
+		/* Menu Options*/
 		public function	menuChoice(me:MouseEvent)
 		{	
 			if (me.target.name == "gameButton")
@@ -146,18 +148,10 @@
 				addChild(playMenu);
 				
 			}
-			else if(me.target.name == "settingsButton")
-			{
-
-			}
 			else if(me.target.name == "helpButton")
 			{
 				removeChild(menu);
 				addChild(helpMenu);
-			}
-			else if(me.target.name == "creditsButton")
-			{
-
 			}
 			
 			playMenu.Easy.addEventListener(MouseEvent.CLICK, difficultyChoice);
@@ -168,6 +162,7 @@
 			playMenu.levelTwo.addEventListener(MouseEvent.CLICK, loadLevel);
 			playMenu.levelThree.addEventListener(MouseEvent.CLICK, loadLevel);
 			playMenu.levelFour.addEventListener(MouseEvent.CLICK, loadLevel);
+			playMenu.levelFive.addEventListener(MouseEvent.CLICK, loadLevel);
 			
 			playMenu.backToMenuPlay.addEventListener(MouseEvent.CLICK, backToMenu);
 			helpMenu.backToMenuHelp.addEventListener(MouseEvent.CLICK, backToMenu);
@@ -199,23 +194,28 @@
 		{	
 			
 			megaHealth = 10;
+			timeInLevel = 0;
+			// ENEMY Melee PROPERTIES   scaleX, speed, health, alive, alpha
 			enemyMeleeProperties[0] = [1, 7, 5, 1, 1];
 			enemyMeleeProperties[1] = [1, 7, 5, 1, 1];
 			enemyMeleeProperties[2] = [1, 7, 5, 1, 1];
 			enemyMeleeProperties[3] = [1, 7, 5, 1, 1];
 			enemyMeleeProperties[4] = [1, 7, 5, 1, 1];
 			enemyMeleeProperties[5] = [1, 7, 5, 1, 1];
-			
+			// ENEMY PROPERTIES   scaleX, speed, health, alive, alpha,
 			enemyRangeProperties[0] = [1, 4, 5, 1, 1, 0, 24, 1, 1];
 			enemyRangeProperties[1] = [1, 4, 5, 1, 1, 0, 24, 1, 1];
 			enemyRangeProperties[2] = [1, 4, 5, 1, 1, 0, 24, 1, 1];
 			enemyRangeProperties[3] = [1, 4, 5, 1, 1, 0, 24, 1, 1];
 			enemyRangeProperties[4] = [1, 4, 5, 1, 1, 0, 24, 1, 1];
+			enemyRangeProperties[5] = [1, 4, 5, 1, 1, 0, 24, 1, 1];
 			
 			addChild(scene);
 			addChild(level);
 			
 			scene.x = 0;
+			mega.x = 50;
+			mega.y = 400;
 			
 			previousLevel = selectedLevel;
 			
@@ -235,7 +235,12 @@
 			{
 				selectedLevel = 4;
 			}
+			else if (me.target.name == "levelFive")
+			{
+				selectedLevel = 5;
+			}
 			
+			/* If level change reset block A States */
 			if (previousLevel != selectedLevel)
 			{
 				blockAStates[0] = ["Still", "Normal", 0, 1, 1]; 
@@ -250,6 +255,7 @@
 				blockAStates[9] = ["Still", "Normal", 0, 1, 1]; 
 			}
 			
+			/* DECLARE COMPONENTS OF LEVEL */
 			if (me.target.name == "levelOne")
 			{
 				
@@ -316,7 +322,6 @@
 				enemyRangeProperties[2][7] = 0;
 				enemyRangeProperties[3][7] = 0;
 				
-				//blockAStates[0][1] = "Sand";
 				blockAStates[1][1] = "Sand";
 				blockAStates[2][1] = "Sand";
 				blockAStates[3][1] = "Sand";
@@ -342,7 +347,6 @@
 				enemyRangeProperties[3][7] = 0;
 				enemyRangeProperties[4][7] = 0;
 				
-				//blockAStates[0][1] = "Sand";
 				blockAStates[0][0] = "Vertical";
 				blockAStates[1][0] = "Vertical";
 				blockAStates[1][4] = -1;
@@ -354,17 +358,38 @@
 				blockAStates[8][1] = "Sand";
 
 			}	
-			
-			mega.x = 50;
-			mega.y = 400;
+			else if(me.target.name == "levelFive")
+			{
+				level.gotoAndStop (5);
+				scene.gotoAndStop (5);
+				
+				selectedLevel = 5;
+				finalScreen = 2;
+				currScreen = 1;
+				
+				numOfABlocks = 6;
+				numOfBBlocks = 6;
+				
+				meleeEnemies = 4;
+				rangeEnemies = 4;
+				
+				blockAStates[0][1] = "Ice";
+				blockAStates[1][1] = "Ice";
+				blockAStates[2][1] = "Ice";
+				blockAStates[3][1] = "Ice";
+				blockAStates[4][1] = "Ice";
+				
+			}	
+
 			mega.xSpeed = 0;
 			mega.ySpeed = 0;
 			mega.jump = false;
 			
-			
+			// Change health and damage and fire rate based on difficulty
 			if (difficulty == 1)
 			{
 				myChannel = baby.play();
+				enemyMaxHealth = 3;
 				for(var enemyMeleeDifficulty1:int = 0; enemyMeleeDifficulty1 < meleeEnemies; enemyMeleeDifficulty1++)
 				{
 					enemyMeleeProperties[enemyMeleeDifficulty1][1] = 4;
@@ -380,6 +405,7 @@
 			else if (difficulty == 2)
 			{
 				myChannel = bitMusic.play();
+				enemyMaxHealth = 5;
 				for(var enemyMeleeDifficulty2:int = 0; enemyMeleeDifficulty2 < meleeEnemies; enemyMeleeDifficulty2++)
 				{
 					enemyMeleeProperties[enemyMeleeDifficulty2][1] = 7;
@@ -396,10 +422,12 @@
 			{
 				
 				myChannel = xGon.play();
+				enemyMaxHealth = 8;
 				for(var enemyMeleeDifficulty3:int = 0; enemyMeleeDifficulty3 < meleeEnemies; enemyMeleeDifficulty3++)
 				{
 					enemyMeleeProperties[enemyMeleeDifficulty3][1] = 9;
 					enemyMeleeProperties[enemyMeleeDifficulty3][2] = 8;
+					
 				}
 				for(var enemyRangeDifficulty3:int = 0; enemyRangeDifficulty3 < rangeEnemies; enemyRangeDifficulty3++)
 				{
@@ -409,10 +437,9 @@
 				}
 			}
 			
-			//enemyMeleeLeft = true;
-			
 			/*LOAD ALL BLOCKS FOR LEVEL*/
 			
+			/* ADD AND NAME MELEE ENEMIES */
 			for (var spawnMeleeEnemies:int = 1; spawnMeleeEnemies <= meleeEnemies; spawnMeleeEnemies ++)
 			{
 				var enemyMelee:EnemyMelee = new EnemyMelee();
@@ -437,6 +464,7 @@
 				addChild(enemyMelee);
 			}
 			
+			/* ADD AND NAME RANGED ENEMIES */
 			for (var spawnRangeEnemies:int = 1; spawnRangeEnemies <= rangeEnemies; spawnRangeEnemies ++)
 			{
 				var enemyRange:EnemyRange = new EnemyRange();
@@ -461,6 +489,7 @@
 				addChild(enemyRange);
 			}
 			
+			/* POSITION ALL ENEMIES*/
 			if (me.target.name == "levelOne")
 			{
 				this.getChildByName("enemyMelee1").x = 2500;
@@ -469,7 +498,6 @@
 				this.getChildByName("enemyRange1").x = 2000;
 				this.getChildByName("enemyRange1").y = 400;
 				this.getChildByName("enemyRange1").scaleX = -1;
-				
 			}
 			else if(me.target.name == "levelTwo")
 			{
@@ -478,15 +506,12 @@
 				
 				this.getChildByName("enemyRange1").x = 1350;
 				this.getChildByName("enemyRange1").y = 200;
-				this.getChildByName("enemyRange1").scaleX = -1;
 				
 				this.getChildByName("enemyRange2").x = 1075;
 				this.getChildByName("enemyRange2").y = 300;
-				this.getChildByName("enemyRange2").scaleX = -1;
 				
 				this.getChildByName("enemyRange3").x = 400;
 				this.getChildByName("enemyRange3").y = 400;
-				this.getChildByName("enemyRange3").scaleX = -1;
 			}	
 			else if(me.target.name == "levelThree")
 			{
@@ -510,18 +535,15 @@
 				
 				this.getChildByName("enemyRange1").x = 1350;
 				this.getChildByName("enemyRange1").y = 400;
-				this.getChildByName("enemyRange1").scaleX = -1;
 				
 				this.getChildByName("enemyRange2").x = 2050;
 				this.getChildByName("enemyRange2").y = 400;
-				this.getChildByName("enemyRange2").scaleX = -1;
 				
 				this.getChildByName("enemyRange3").x = 2300;
 				this.getChildByName("enemyRange3").y = 400;
 				
 				this.getChildByName("enemyRange4").x = 2800;
 				this.getChildByName("enemyRange4").y = 400;
-				this.getChildByName("enemyRange4").scaleX = -1;
 			}	
 			else if(me.target.name == "levelFour")
 			{
@@ -533,23 +555,48 @@
 
 				this.getChildByName("enemyRange1").x = 1125;
 				this.getChildByName("enemyRange1").y = 300;
-				this.getChildByName("enemyRange1").scaleX = -1;
 				
 				this.getChildByName("enemyRange2").x = 425;
 				this.getChildByName("enemyRange2").y = 400;
-				this.getChildByName("enemyRange2").scaleX = -1;
 				
 				this.getChildByName("enemyRange3").x = 425;
 				this.getChildByName("enemyRange3").y = 200;
-				this.getChildByName("enemyRange3").scaleX = -1;
 				
 				this.getChildByName("enemyRange4").x = 1125;
 				this.getChildByName("enemyRange4").y = 400;
-				this.getChildByName("enemyRange4").scaleX = -1;
 				
 				this.getChildByName("enemyRange5").x = 1125;
 				this.getChildByName("enemyRange5").y = 200;
-				this.getChildByName("enemyRange5").scaleX = -1;
+			}
+			else if(me.target.name == "levelFive")
+			{
+				this.getChildByName("enemyMelee1").x = 1550;
+				this.getChildByName("enemyMelee1").y = 400;	
+				
+				this.getChildByName("enemyMelee2").x = 1850;
+				this.getChildByName("enemyMelee2").y = 400;
+				
+				this.getChildByName("enemyMelee3").x = 2000;
+				this.getChildByName("enemyMelee3").y = 400;
+				
+				this.getChildByName("enemyMelee4").x = 2000;
+				this.getChildByName("enemyMelee4").y = 400;
+
+				this.getChildByName("enemyRange1").x = 1700;
+				this.getChildByName("enemyRange1").y = 400;
+				this.getChildByName("enemyRange1").scaleX = -1;
+				
+				this.getChildByName("enemyRange2").x = 1850;
+				this.getChildByName("enemyRange2").y = 400;
+				this.getChildByName("enemyRange2").scaleX = -1;
+				
+				this.getChildByName("enemyRange3").x = 2000;
+				this.getChildByName("enemyRange3").y = 400;
+				this.getChildByName("enemyRange3").scaleX = -1;
+				
+				this.getChildByName("enemyRange4").x = 2000;
+				this.getChildByName("enemyRange4").y = 400;
+				this.getChildByName("enemyRange4").scaleX = -1;
 			}
 			totalEnemies = rangeEnemies + meleeEnemies;
 			
@@ -559,7 +606,7 @@
 			mega.inertia = 12;
 			mega.gotoAndStop("Idle");
 			
-			
+			/* Health Text */
 			healthFormat.font = ("Tw Cen MT Condensed");
 			healthFormat.size = 55;
 			healthFormat.color = 0x000000;
@@ -572,7 +619,45 @@
 			healthText.y = 50;
 			allEnemiesDead = true;
 			
-
+			/* Add health bar for melees*/
+			for(var addMeleeHealthBorder:int = 1; addMeleeHealthBorder <= meleeEnemies; addMeleeHealthBorder++)
+			{
+				var enemyMeleeHealthBorder:EnemyMeleeHealthBorder = new EnemyMeleeHealthBorder();
+				var enemyMeleeHealthBar:EnemyMeleeHealthBar = new EnemyMeleeHealthBar();
+				
+				enemyMeleeHealthBorder.x = this.getChildByName("enemyMelee" + addMeleeHealthBorder).x
+				enemyMeleeHealthBorder.y = this.getChildByName("enemyMelee" + addMeleeHealthBorder).y - this.getChildByName("enemyMelee" + addMeleeHealthBorder).height - 10;
+				enemyMeleeHealthBorder.name = "enemyMeleeHealthBorder" + addMeleeHealthBorder;
+				
+				
+				enemyMeleeHealthBar.x = enemyMeleeHealthBorder.x - (enemyMeleeHealthBorder.width/2) + 2;
+				enemyMeleeHealthBar.y = enemyMeleeHealthBorder.y;
+				enemyMeleeHealthBar.name = "enemyMeleeHealthBar" + addMeleeHealthBorder;
+				
+				addChild(enemyMeleeHealthBorder);
+				addChild(enemyMeleeHealthBar);
+			
+			}
+			/* Add health bar for ranges*/
+			for(var addRangeHealthBorder:int = 1; addRangeHealthBorder <= rangeEnemies; addRangeHealthBorder++)
+			{
+				var enemyRangeHealthBorder:EnemyRangeHealthBorder = new EnemyRangeHealthBorder();
+				var enemyRangeHealthBar:EnemyRangeHealthBar = new EnemyRangeHealthBar();
+				
+				enemyRangeHealthBorder.x = this.getChildByName("enemyRange" + addRangeHealthBorder).x
+				enemyRangeHealthBorder.y = this.getChildByName("enemyRange" + addRangeHealthBorder).y - this.getChildByName("enemyRange" + addRangeHealthBorder).height - 10;
+				enemyRangeHealthBorder.name = "enemyRangeHealthBorder" + addRangeHealthBorder;
+				
+				
+				enemyRangeHealthBar.x = enemyRangeHealthBorder.x - (enemyRangeHealthBorder.width/2) + 2;
+				enemyRangeHealthBar.y = enemyRangeHealthBorder.y;
+				enemyRangeHealthBar.name = "enemyRangeHealthBar" + addRangeHealthBorder;
+				
+				addChild(enemyRangeHealthBorder);
+				addChild(enemyRangeHealthBar);
+			
+			}
+			trace(this.numChildren, "number of objects on the stage");
 	
 			addChild(mega);
 			
@@ -586,6 +671,7 @@
 		
 		public function keymega(ke:KeyboardEvent)
 		{
+			/* Take Controls */
 			if (levelFinished == false)
 			{
 				if (ke.keyCode == Keyboard.RIGHT)
@@ -624,12 +710,6 @@
 					shooting = false;
 					
 				}
-				if (ke.keyCode == 90)
-				{
-					shooting = true;
-					attacking = false;
-					
-				}
 			}
 		}
 		
@@ -644,9 +724,19 @@
 			
 			var white:Color = new Color();
 			white.setTint(0xFFFFFF, 0.25);
-
-			healthText.text = "Health  " + megaHealth;
 			
+			timeInLevel ++;
+			// health info
+			if (levelFinished == false)
+			{
+				healthText.text = "Health  " + megaHealth;
+			}
+			else 
+			{
+				healthText.text = "Health  " + 0;
+			}
+			
+			// change block color based on property
 			for(var colorBlocks:int = 0; colorBlocks < numOfABlocks; colorBlocks++)
 			{
 				
@@ -664,9 +754,11 @@
 				}
 
 			}
+			
+			// make scene white in order for clarity
 			scene.transform.colorTransform = white;
 			
-			
+			//move objects when reach end of screen
 			if (currScreen != finalScreen)
 			{
 				if (mega.x > 750)
@@ -710,7 +802,7 @@
 			}
 			else
 			{
-			
+				// if level beat 
 				if (mega.x > 750)
 				{
 					mega.x = 749;
@@ -728,7 +820,7 @@
 				}
 			}
 			
-			
+			//move objects when reach begging of screen
 			if (currScreen != 1)
 			{
 				if (mega.x < 50)
@@ -778,8 +870,86 @@
 					mega.x = mega.width/2;
 				}
 			}
+			/* Custom code specifically for arena level */
+			if (selectedLevel == 5)
+			{
+				if(timeInLevel == 1)
+				{
+					level.getChildByName("blockB15").y = 225;
+					level.getChildByName("blockB25").y = 250;
+					level.getChildByName("blockB25").y = 250;
+					level.getChildByName("blockB35").y = 250;
+					level.getChildByName("blockB45").y = 250;
+					level.getChildByName("blockB55").y = 250;
+				}
+
+				if(currScreen == 2 && mega.x > 55)
+				{
+					level.getChildByName("blockB15").y = 250;
+				}
+				
+				if(timeInLevel == 240)
+				{
+					level.getChildByName("blockB25").y = 150;
+				}
+				else if(timeInLevel == 720)
+				{
+					blockAStates[2][1] = "Sand"; 
+					level.getChildByName("blockB25").y = 150;
+					level.getChildByName("blockB35").y = 150;
+				}
+				else if(timeInLevel == 1200)
+				{
+					blockAStates[1][1] = "Sand"; 
+					blockAStates[3][1] = "Sand";
+					
+					level.getChildByName("blockB25").y = 150;
+					level.getChildByName("blockB45").y = 150;
+					
+					this.getChildByName("enemyMelee2").x = 1550-700;
+					this.getChildByName("enemyRange2").x = 1850-700;
+				}
+				else if(timeInLevel == 1920)
+				{
+					blockAStates[0][1] = "Sand"; 
+					blockAStates[4][1] = "Sand";
+					blockAStates[5][1] = "Sand";
+					level.getChildByName("blockB25").y = 150;
+					level.getChildByName("blockB55").y = 150;
+					this.getChildByName("enemyMelee3").x = 1550-700;
+					this.getChildByName("enemyRange4").x = 1700-700;
+					this.getChildByName("enemyRange3").x = 1850-700;
+					this.getChildByName("enemyMelee4").x = 2000-700;
+				}
+				
 			
-			
+				if (difficulty == 1)
+				{
+					if(timeInLevel == 300 || timeInLevel == 850 || timeInLevel == 1400 || timeInLevel == 2200)
+					{
+						level.getChildByName("blockB25").y = 250;
+					}
+				}
+				else if (difficulty == 2)
+				{
+					if(timeInLevel == 275 || timeInLevel == 800 || timeInLevel == 1325 || timeInLevel == 2140)
+					{
+						level.getChildByName("blockB25").y = 250;
+					}
+				}
+				else if (difficulty == 3)
+				{
+					if(timeInLevel == 265 || timeInLevel == 780 || timeInLevel == 1295 || timeInLevel == 2100)
+					{
+						level.getChildByName("blockB25").y = 250;
+					}
+				}
+				
+				if (totalEnemies == 0)
+				{
+					level.getChildByName("blockB25").y = -150;
+				}
+			}
 			if (amountShot > 0)
 			{
 				for (var k:int = 0; k < amountShot; k++)
@@ -796,6 +966,39 @@
 			
 			/* ENEMEY MOVEMENT AND ACTIONS */ 
 			
+			/* move and change health border */
+			for(var moveMeleeHealthBorder:int = 1; moveMeleeHealthBorder <= meleeEnemies; moveMeleeHealthBorder++)
+			{
+				
+				this.getChildByName("enemyMeleeHealthBorder" + moveMeleeHealthBorder).x = this.getChildByName("enemyMelee" + moveMeleeHealthBorder).x
+				this.getChildByName("enemyMeleeHealthBorder" + moveMeleeHealthBorder).y = this.getChildByName("enemyMelee" + moveMeleeHealthBorder).y - 70;
+				
+				this.getChildByName("enemyMeleeHealthBar" + moveMeleeHealthBorder).x = this.getChildByName("enemyMeleeHealthBorder" + moveMeleeHealthBorder).x - (this.getChildByName("enemyMeleeHealthBorder" + moveMeleeHealthBorder).width/2) + 2;
+				this.getChildByName("enemyMeleeHealthBar" + moveMeleeHealthBorder).y = this.getChildByName("enemyMeleeHealthBorder" + moveMeleeHealthBorder).y;
+				this.getChildByName("enemyMeleeHealthBar" + moveMeleeHealthBorder).width =  enemyMeleeProperties[moveMeleeHealthBorder - 1][2]/enemyMaxHealth*30;
+				if(enemyMeleeProperties[moveMeleeHealthBorder - 1][2] == 0)
+				{
+					this.getChildByName("enemyMeleeHealthBar" + moveMeleeHealthBorder).alpha = 0;
+					this.getChildByName("enemyMeleeHealthBorder" + moveMeleeHealthBorder).alpha = 0;
+				}
+			}
+			for(var moveRangeHealthBorder:int = 1; moveRangeHealthBorder <= rangeEnemies; moveRangeHealthBorder++)
+			{
+				
+				this.getChildByName("enemyRangeHealthBorder" + moveRangeHealthBorder).x = this.getChildByName("enemyRange" + moveRangeHealthBorder).x
+				this.getChildByName("enemyRangeHealthBorder" + moveRangeHealthBorder).y = this.getChildByName("enemyRange" + moveRangeHealthBorder).y - 70;
+				
+				this.getChildByName("enemyRangeHealthBar" + moveRangeHealthBorder).x = this.getChildByName("enemyRangeHealthBorder" + moveRangeHealthBorder).x - (this.getChildByName("enemyRangeHealthBorder" + moveRangeHealthBorder).width/2) + 2;
+				this.getChildByName("enemyRangeHealthBar" + moveRangeHealthBorder).y = this.getChildByName("enemyRangeHealthBorder" + moveRangeHealthBorder).y;
+				this.getChildByName("enemyRangeHealthBar" + moveRangeHealthBorder).width =  enemyRangeProperties[moveRangeHealthBorder - 1][2]/enemyMaxHealth*30;
+				if(enemyRangeProperties[moveRangeHealthBorder - 1][2] == 0)
+				{
+					this.getChildByName("enemyRangeHealthBar" + moveRangeHealthBorder).alpha = 0;
+					this.getChildByName("enemyRangeHealthBorder" + moveRangeHealthBorder).alpha = 0;
+				}
+			}
+			
+			/* check for enmy getting shot and enemy shooting player */
 			for(var enemyMeleeActions:int = 1; enemyMeleeActions <= meleeEnemies; enemyMeleeActions ++)
 			{
 				if (enemyMeleeProperties[enemyMeleeActions - 1][3] == 1 && levelFinished == false)
@@ -828,32 +1031,30 @@
 						megaInvincible = true;
 						
 					}
-					
-					
 				}
 			}
 		
+			// make player invincible for small amount of time
 			if (megaInvincible == true)
 			{
 				if (invincibleTime == 1)
 				{
 					megaHit.play();
 				}
-				mega.alpha = 0.75;
+				mega.alpha = 0.65;
 				invincibleTime ++;
 				if (invincibleTime == timeToRegen)
 				{
 					megaInvincible = false;
 					invincibleTime = 0;
 				}
-				
 			}
 			else 
 			{
 				mega.alpha = 1.0
 			}
 			
-			
+			/* range enmy actions including shooting and getting shot */
 			for(var enemyRangeActions:int = 1; enemyRangeActions <= rangeEnemies; enemyRangeActions ++)
 			{
 				if (enemyRangeProperties[enemyRangeActions - 1][3] == 1 && levelFinished == false)
@@ -981,9 +1182,8 @@
 			
 			
 			/* PLAYER MOVEMENT AND ACTIONS */
-			//trace(megaHealth);
-			
-			
+		
+			/* fail state*/
 			if (megaHealth <= 0 && levelFinished == false)
 			{
 				myChannel.stop();
@@ -1015,6 +1215,7 @@
 				mega.y = 400;
 			}
 			
+			/* player animations */
 			if (mega.ySpeed < 0.8 && attacking == false && shooting == false )
 			{
 				mega.gotoAndStop("Jump");
@@ -1046,6 +1247,7 @@
 				}
 			}
 			
+			/* if shooting add bullets and position bullets based on state*/
 			if (shooting == true && sliding == false)
 			{
 				if (canShoot == true)
@@ -1100,6 +1302,8 @@
 					shotDirection[stopMovingEnemyBullets] = 0;
 				}
 			}
+			
+			/* move bullets and apply collision*/
 			if (amountShot > 0)
 			{
 				for (var i:int = 0; i < amountShot; i++)
@@ -1208,7 +1412,8 @@
 			} 
 			
 			/* GROUND */
-
+			
+			/* ground collision*/
 			if (level.ground1.hitTestPoint(mega.x-mega.width/2, mega.y, true) || level.ground1.hitTestPoint(mega.x+mega.width/2, mega.y, true))
 			{
 				mega.ySpeed = 0;
@@ -1248,6 +1453,7 @@
 			
 			/* BLOCK COLLISION  & MOVING */
 			
+			/* block collision for mega and enemy */
 			for (var blockACollision:int = 1; blockACollision <= numOfABlocks; blockACollision++)
 			{
 				
@@ -1398,6 +1604,23 @@
 					}
 				}
 				
+				for (var rangeEnemyCollisionB:int = 1; rangeEnemyCollisionB <= rangeEnemies; rangeEnemyCollisionB++)
+				{
+
+					if (level.getChildByName("blockB" + blockBCollision + selectedLevel).hitTestPoint((this.getChildByName("enemyRange" + rangeEnemyCollisionB).x + enemyRange.width/2 + 20), (this.getChildByName("enemyRange" + rangeEnemyCollisionB).y - enemyRange.height/3), true) && enemyRangeProperties[rangeEnemyCollisionB - 1][4] == -1)
+					{
+						this.getChildByName("enemyRange" + rangeEnemyCollisionB).scaleX *= -1;
+						enemyRangeProperties[rangeEnemyCollisionB - 1][1] *= -1;
+						enemyRangeProperties[rangeEnemyCollisionB - 1][4] *= -1;
+					}
+					else if (level.getChildByName("blockB" + blockBCollision + selectedLevel).hitTestPoint((this.getChildByName("enemyRange" + rangeEnemyCollisionB).x - enemyRange.width/2 - 20), (this.getChildByName("enemyRange" + rangeEnemyCollisionB).y - enemyRange.height/3), true) && enemyRangeProperties[rangeEnemyCollisionB - 1][4] == 1)
+					{
+						this.getChildByName("enemyRange" + rangeEnemyCollisionB).scaleX *= -1;
+						enemyRangeProperties[rangeEnemyCollisionB - 1][1] *= -1;
+						enemyRangeProperties[rangeEnemyCollisionB - 1][4] *= -1;
+					}
+				}
+				
 			}
 			
 			
@@ -1451,6 +1674,8 @@
 			}
 			else if (me.target.name == "backToMenuGame")
 			{
+				/* remove everything off screen when level complete */
+				removeChild(healthText);
 				removeChild(filter);
 				removeChild(winScreen);
 				removeChild(level);
@@ -1467,6 +1692,20 @@
 					removeChild(this.getChildByName("enemyRange" + removeRangeEnemies));
 
 				}
+				for(var removeMeleeHealthBorder:int = 1; removeMeleeHealthBorder <= meleeEnemies; removeMeleeHealthBorder++)
+				{
+					
+					removeChild(this.getChildByName("enemyMeleeHealthBorder" + removeMeleeHealthBorder));
+					removeChild(this.getChildByName("enemyMeleeHealthBar" + removeMeleeHealthBorder));
+					
+				}
+				for(var removeRangeHealthBorder:int = 1; removeRangeHealthBorder <= rangeEnemies; removeRangeHealthBorder++)
+				{
+					
+					removeChild(this.getChildByName("enemyRangeHealthBorder" + removeRangeHealthBorder));
+					removeChild(this.getChildByName("enemyRangeHealthBar" + removeRangeHealthBorder));
+					
+				}
 				meleeEnemies = 0;
 				rangeEnemies = 0;
 				levelFinished = false;
@@ -1481,11 +1720,13 @@
 				}
 				amountShot = 0;
 				enemyAmountShot = 0;
+				
+				
 			}
 			else if (me.target.name == "backToMenuGameOver")
 			{
+				/* remove everything off screen when death */
 				removeChild(healthText);
-
 				removeChild(filter);
 				removeChild(gameOver);
 				removeChild(level);
@@ -1502,9 +1743,35 @@
 					removeChild(this.getChildByName("enemyRange" + removeRangeEnemiesGO));
 
 				}
+				for(var removeMeleeHealthBorderGO:int = 1; removeMeleeHealthBorderGO <= meleeEnemies; removeMeleeHealthBorderGO++)
+				{
+					
+					removeChild(this.getChildByName("enemyMeleeHealthBorder" + removeMeleeHealthBorderGO));					
+					removeChild(this.getChildByName("enemyMeleeHealthBar" + removeMeleeHealthBorderGO));
+					
+				}
+				for(var removeRangeHealthBorderGO:int = 1; removeRangeHealthBorderGO <= rangeEnemies; removeRangeHealthBorderGO++)
+				{
+					
+					removeChild(this.getChildByName("enemyRangeHealthBorder" + removeRangeHealthBorderGO));					
+					removeChild(this.getChildByName("enemyRangeHealthBar" + removeRangeHealthBorderGO));
+					
+				}
 				meleeEnemies = 0;
 				rangeEnemies = 0;
 				levelFinished = false;
+				
+				for (var stopMovingBulletsGO:int = 0; stopMovingBulletsGO< amountShot; stopMovingBulletsGO ++)
+				{
+					removeChild(this.getChildByName("bullet" + stopMovingBulletsGO));
+				}
+				for (var stopMovingEnemyBulletsGO:int = 0; stopMovingEnemyBulletsGO< enemyAmountShot; stopMovingEnemyBulletsGO ++)
+				{
+					removeChild(this.getChildByName("enemyBullet" + stopMovingEnemyBulletsGO));
+				}
+				
+				amountShot = 0;
+				enemyAmountShot = 0;
 
 			}
 		}
